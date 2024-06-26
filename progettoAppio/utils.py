@@ -4,12 +4,9 @@ import argparse
 
 def read_args():
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--dataset_path_train', type=str,
-                        default='DATABASE PET CEREBRALI ANONIMO-Train.csv',
+    parser.add_argument('--dataset_path', type=str,
+                        default='DataSet/superconductvty.csv',
                         help='Path to the file containing the training set.')
-    parser.add_argument('--dataset_path_test', type=str,
-                        default='DATABASE PET CEREBRALI ANONIMO-Test.csv',
-                        help='Path to the file containing the test set.')
     parser.add_argument("--verbose", type=str2bool, default=True)
     parser.add_argument("--cv", type=int, default=5)
 

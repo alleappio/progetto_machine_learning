@@ -1,20 +1,18 @@
 from ucimlrepo import fetch_ucirepo
+import utils
 
-# fetch dataset
-superconductivty_data = fetch_ucirepo(id=464)
+# DataSet link: https://archive.ics.uci.edu/dataset/464/superconductivty+data
+# DataSet doc: https://github.com/uci-ml-repo/ucimlrepo
 
-# data (as pandas dataframes)
-#X = superconductivty_data.data.features
-#y = superconductivty_data.data.targets
-o = superconductivty_data.data.original
+def main():
+    args = utils.read_args()
+    
+    # fetch dataset
+    superconductivty_data = fetch_ucirepo(id=464)
 
-print(type(o))
-o.to_csv("DataSet/superconductvty.csv")
-# metadata
-#print(superconductivty_data.metadata)
+    # data (as pandas dataframes)
+    o = superconductivty_data.data.original
+    o.to_csv("DataSet/superconductvty.csv")
 
-# variable information
-#print(superconductivty_data.variables)
-
-#print(X)
-#print(y)
+if __name__=='__main__':
+    main()

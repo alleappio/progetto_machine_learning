@@ -13,7 +13,7 @@ class FeatureSelector:
         corr_dict = self.correlations.to_dict()
         winners = []
         for i in corr_dict:
-            if np.abs(corr_dict[i])>threshold:
+            if np.abs(corr_dict[i])>=threshold:
                 winners.append(i)
         return winners
             

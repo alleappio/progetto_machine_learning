@@ -1,5 +1,15 @@
 import pandas as pd
 import argparse
+from matplotlib import pyplot as plt
+import seaborn as sea
+
+def plot_corr_matrix(df: pd.DataFrame, verbose: bool = False):
+    corr_matrix = df.corr()
+    sea.heatmap(corr_matrix, annot=True)
+    plt.show()
+    if verbose:
+        print("\nCorrelation of each column to MPG (the target).")
+        print(corr_matrix['MPG'])
 
 
 def read_args():

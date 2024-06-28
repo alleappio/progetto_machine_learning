@@ -1,5 +1,5 @@
 from ucimlrepo import fetch_ucirepo
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
 import pandas as pd
 import os
 
@@ -49,7 +49,12 @@ def main():
         print(y_train)
         print(X_test)
         print(y_test)
-
+    
+    reg = LinearRegression().fit(X_train,y_train)
+    print(f"score: {reg.score(X_train, y_train)}")
+    # print(X_test.head(1))
+    print(f"predicted:{reg.predict(X_test.head(1))}")
+    print(y_test.head(1))
 
 if __name__=='__main__':
     main()

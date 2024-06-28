@@ -5,6 +5,10 @@ https://archive.ics.uci.edu/dataset/464/superconductivty+data
 ## DataSet doc: 
 https://github.com/uci-ml-repo/ucimlrepo
 ## Data preparation
+### Feature selection
+select all features in which 
+$$\text{target_corr} >= 0.4$$
+
 ### How to divide data 
 - 60% - train set,
 - 20% - validation set,

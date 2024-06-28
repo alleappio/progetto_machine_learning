@@ -11,36 +11,44 @@ from feature_selector import FeatureSelector
 # DataSet doc: https://github.com/uci-ml-repo/ucimlrepo
 
 def main():
-    print("reading args")
     args = utils.read_args()
 
     if os.path.isfile(args.dataset_path):
         dataset = pd.read_csv(args.dataset_path)
     else:
         # fetch dataset
-        print("fetch dataset")
+        if args.verbose:
+            print("fetch dataset")
         superconductivty_data = fetch_ucirepo(id=464)
 
         # data (as pandas dataframes)
-        print("saving data in veriable")
+        if args.verbose:
+            print("saving data in veriable")
         dataset = superconductivty_data.data.original
-        print("saving data in file")
+    
+        if args.verbose:
+            print("saving data in file")
         dataset.to_csv("DataSet/superconductvty.csv", index=False)
     
     s = FeatureSelector(dataset, parameters.TARGET)
     selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)
-
+   
+    if args.verbose:
+        print(f"selected feaures: {selected_features}")
+    
+    new_data = dataset[selected_features]
     # Prepare the dataset
-    new_data = PrepareData(dataset, parameters.TARGET)
+    new_data = PrepareData(new_data, parameters.TARGET)
     # train data
     X_train, y_train = new_data.get_train_data()
     # test data
     X_test, y_test = new_data.get_test_data()
     
-    #print(X_train)
-    #print(y_train)
-    #print(X_test)
-    #print(y_test)
+    if args.verbose: 
+        print(X_train)
+        print(y_train)
+        print(X_test)
+        print(y_test)
 
 
 if __name__=='__main__':

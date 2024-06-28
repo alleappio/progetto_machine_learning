@@ -1,25 +1,20 @@
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 class PrepareData:
-    def __init__(self, data):
+    def __init__(self, data, target = 'critical_temp'):
         self.data = data
-        self.shuffle()
-        self.divide()
-
-    def shuffle(self):
-        self.data = self.data.sample(n = len(self.data))
-        self.data = self.data.reset_index(drop = True)
-    
-    def divide(self):
-        self.train_data, self.validate_data, self.test_data = np.split(self.data, [int(.6*len(self.data)), int(.8*len(self.data))])
-
+        self.target = target
+        self.train_data, self.test_data = train_test_split(self.data)
+        
     def get_train_data(self):
-        return self.train_data
-
-    def get_validate_data(self):
-        return self.validate_data
+        y_train = self.train_data[self.target]
+        X_train = self.train_data.drop(self.target, axis=1)
+        return X_train, y_train
 
     def get_test_data(self):
-        return self.test_data
+        y_test = self.test_data[self.target]
+        X_test = self.test_data.drop(self.target, axis=1)
+        return X_test, y_test
 

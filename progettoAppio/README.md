@@ -7,7 +7,7 @@ https://github.com/uci-ml-repo/ucimlrepo
 ## Data preparation
 ### Feature selection
 select all features in which 
-$$\text{target\_corr} >= 0.4$$
+$$correlation >= 0.4$$
 
 ### How to divide data 
 - 60% - train set,

@@ -7,6 +7,9 @@ import utils
 import general_params as parameters
 from prepare import PrepareData
 from feature_selector import FeatureSelector
+from MLStrategies import LR
+from MLStrategies import KNNR
+
 # DataSet link: https://archive.ics.uci.edu/dataset/464/superconductivty+data
 # DataSet doc: https://github.com/uci-ml-repo/ucimlrepo
 
@@ -49,12 +52,10 @@ def main():
         print(y_train)
         print(X_test)
         print(y_test)
-    
-    reg = LinearRegression().fit(X_train,y_train)
-    print(f"score: {reg.score(X_train, y_train)}")
-    # print(X_test.head(1))
-    print(f"predicted:{reg.predict(X_test.head(1))}")
-    print(y_test.head(1))
+   
+    linear = LR(X_train, y_train, X_test, y_test)
+    linear.train()
+    print(linear.get_scores())
 
 if __name__=='__main__':
     main()

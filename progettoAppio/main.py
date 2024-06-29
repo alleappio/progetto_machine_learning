@@ -9,6 +9,7 @@ from prepare import PrepareData
 from feature_selector import FeatureSelector
 from MLStrategies import LR
 from MLStrategies import KNNR
+from MLStrategies import DT
 
 # DataSet link: https://archive.ics.uci.edu/dataset/464/superconductivty+data
 # DataSet doc: https://github.com/uci-ml-repo/ucimlrepo
@@ -60,7 +61,10 @@ def main():
 
     knn = KNNR(X_train, y_train, X_test, y_test)
     knn.train()
-    utils.print_pretty_metrics("K nearest neighbor", knn.get_scores())
+    utils.print_pretty_metrics("K nearest neighbors", knn.get_scores())
 
+    dt = DT(X_train, y_train, X_test, y_test)
+    dt.train()
+    utils.print_pretty_metrics("Decision Tree", dt.get_scores())
 if __name__=='__main__':
     main()

@@ -3,6 +3,7 @@ import argparse
 from matplotlib import pyplot as plt
 import seaborn as sea
 from json import dumps
+
 def plot_corr_matrix(df: pd.DataFrame, verbose: bool = False):
     corr_matrix = df.corr()
     sea.heatmap(corr_matrix, annot=True)

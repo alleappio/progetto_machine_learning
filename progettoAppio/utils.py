@@ -2,7 +2,7 @@ import pandas as pd
 import argparse
 from matplotlib import pyplot as plt
 import seaborn as sea
-
+from json import dumps
 def plot_corr_matrix(df: pd.DataFrame, verbose: bool = False):
     corr_matrix = df.corr()
     sea.heatmap(corr_matrix, annot=True)
@@ -11,6 +11,11 @@ def plot_corr_matrix(df: pd.DataFrame, verbose: bool = False):
         print("\nCorrelation of each column to MPG (the target).")
         print(corr_matrix['MPG'])
 
+def print_pretty_metrics(context, metrics):
+    metrics_string=dumps(metrics, indent=2)
+    print(
+        f"{context}: {metrics_string}"
+    )
 
 def read_args():
     parser = argparse.ArgumentParser(description='Process some integers.')

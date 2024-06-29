@@ -55,7 +55,12 @@ def main():
    
     linear = LR(X_train, y_train, X_test, y_test)
     linear.train()
-    print(linear.get_scores())
+    # print(f"Linear:{json.dumps(linear.get_scores(),indent=2)}")
+    utils.print_pretty_metrics("Linear regression", linear.get_scores())
+
+    knn = KNNR(X_train, y_train, X_test, y_test)
+    knn.train()
+    utils.print_pretty_metrics("K nearest neighbor", knn.get_scores())
 
 if __name__=='__main__':
     main()

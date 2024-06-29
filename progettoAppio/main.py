@@ -10,6 +10,7 @@ from feature_selector import FeatureSelector
 from MLStrategies import LR
 from MLStrategies import KNNR
 from MLStrategies import DT
+from MLStrategies import SVM
 
 # DataSet link: https://archive.ics.uci.edu/dataset/464/superconductivty+data
 # DataSet doc: https://github.com/uci-ml-repo/ucimlrepo
@@ -66,5 +67,10 @@ def main():
     dt = DT(X_train, y_train, X_test, y_test)
     dt.train()
     utils.print_pretty_metrics("Decision Tree", dt.get_scores())
+
+    svr = SVM(X_train, y_train, X_test, y_test)
+    svr.train()
+    utils.print_pretty_metrics("Support Vector Regression", svr.get_scores())
+
 if __name__=='__main__':
     main()

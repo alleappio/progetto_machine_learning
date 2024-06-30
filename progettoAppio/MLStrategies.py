@@ -7,7 +7,28 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn import metrics
 
-class LR:
+class GeneralStrategy:
+    def train(self):
+        self.reg = self.reg.fit(self.X_train,self.y_train)
+    
+    def get_metrics(self, y_val, y_pred):
+        calculated_metrics={
+            "MAE": metrics.mean_absolute_error(y_val, y_pred),
+            "MSE": metrics.mean_squared_error(y_val, y_pred),
+            "RMSE": np.sqrt(metrics.mean_squared_error(y_val, y_pred)),
+        }
+        return calculated_metrics
+    
+    def get_scores(self):
+        self.y_pred_train = self.reg.predict(self.X_train)
+        self.y_pred_test = self.reg.predict(self.X_test)
+        scores={
+            "train": self.get_metrics(self.y_pred_train, self.y_train),
+            "test": self.get_metrics(self.y_pred_test, self.y_test)
+        }
+        return scores
+
+class LR(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):
         self.X_train=X_train
         self.y_train=y_train
@@ -15,27 +36,8 @@ class LR:
         self.y_test=y_test
         self.reg = LinearRegression()
     
-    def train(self):
-        self.reg = self.reg.fit(self.X_train,self.y_train)
-    
-    def get_metrics(self, y_val, y_pred):
-        calculated_metrics={
-            "MAE": metrics.mean_absolute_error(y_val, y_pred),
-            "MSE":metrics.mean_squared_error(y_val, y_pred),
-            "RMSE": np.sqrt(metrics.mean_squared_error(y_val, y_pred))
-        }
-        return calculated_metrics
-    
-    def get_scores(self):
-        self.y_pred_train = self.reg.predict(self.X_train)
-        self.y_pred_test = self.reg.predict(self.X_test)
-        scores={
-            "train": self.get_metrics(self.y_pred_train, self.y_train),
-            "test": self.get_metrics(self.y_pred_test, self.y_test)
-        }
-        return scores
 
-class KNNR:
+class KNNR(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):
         self.X_train=X_train
         self.y_train=y_train
@@ -43,27 +45,8 @@ class KNNR:
         self.y_test=y_test
         self.reg = KNeighborsRegressor()
     
-    def train(self):
-        self.reg = self.reg.fit(self.X_train,self.y_train)
-    
-    def get_metrics(self, y_val, y_pred):
-        calculated_metrics={
-            "MAE": metrics.mean_absolute_error(y_val, y_pred),
-            "MSE":metrics.mean_squared_error(y_val, y_pred),
-            "RMSE": np.sqrt(metrics.mean_squared_error(y_val, y_pred))
-        }
-        return calculated_metrics
 
-    def get_scores(self):
-        self.y_pred_train = self.reg.predict(self.X_train)
-        self.y_pred_test = self.reg.predict(self.X_test)
-        scores={
-            "train": self.get_metrics(self.y_pred_train, self.y_train),
-            "test": self.get_metrics(self.y_pred_test, self.y_test)
-        }
-        return scores
-
-class DT:
+class DT(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):
         self.X_train=X_train
         self.y_train=y_train
@@ -71,27 +54,8 @@ class DT:
         self.y_test=y_test
         self.reg = DecisionTreeRegressor()
     
-    def train(self):
-        self.reg = self.reg.fit(self.X_train,self.y_train)
-    
-    def get_metrics(self, y_val, y_pred):
-        calculated_metrics={
-            "MAE": metrics.mean_absolute_error(y_val, y_pred),
-            "MSE":metrics.mean_squared_error(y_val, y_pred),
-            "RMSE": np.sqrt(metrics.mean_squared_error(y_val, y_pred))
-        }
-        return calculated_metrics
 
-    def get_scores(self):
-        self.y_pred_train = self.reg.predict(self.X_train)
-        self.y_pred_test = self.reg.predict(self.X_test)
-        scores={
-            "train": self.get_metrics(self.y_pred_train, self.y_train),
-            "test": self.get_metrics(self.y_pred_test, self.y_test)
-        }
-        return scores
-
-class SVM:
+class SVM(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):
         self.X_train=X_train
         self.y_train=y_train
@@ -99,22 +63,3 @@ class SVM:
         self.y_test=y_test
         self.reg = SVR()
     
-    def train(self):
-        self.reg = self.reg.fit(self.X_train,self.y_train)
-    
-    def get_metrics(self, y_val, y_pred):
-        calculated_metrics={
-            "MAE": metrics.mean_absolute_error(y_val, y_pred),
-            "MSE":metrics.mean_squared_error(y_val, y_pred),
-            "RMSE": np.sqrt(metrics.mean_squared_error(y_val, y_pred))
-        }
-        return calculated_metrics
-
-    def get_scores(self):
-        self.y_pred_train = self.reg.predict(self.X_train)
-        self.y_pred_test = self.reg.predict(self.X_test)
-        scores={
-            "train": self.get_metrics(self.y_pred_train, self.y_train),
-            "test": self.get_metrics(self.y_pred_test, self.y_test)
-        }
-        return scores

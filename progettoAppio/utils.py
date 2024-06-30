@@ -20,7 +20,7 @@ def read_args():
     parser.add_argument('--dataset_path', type=str,
                         default='DataSet/superconductvty.csv',
                         help='Path to the file containing the training set.')
-    parser.add_argument("--verbose", type=str2bool, default=True)
+    parser.add_argument("--verbose", type=str2bool, default=False)
     parser.add_argument("--cv", type=int, default=5)
 
     args = parser.parse_args()

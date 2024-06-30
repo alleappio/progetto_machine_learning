@@ -2,3 +2,4 @@
 .venv
 DataSet
 __pycache__
+log

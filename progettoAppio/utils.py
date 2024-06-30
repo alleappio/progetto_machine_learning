@@ -4,19 +4,16 @@ from matplotlib import pyplot as plt
 import seaborn as sea
 from json import dumps
 
-def plot_corr_matrix(df: pd.DataFrame, verbose: bool = False):
-    corr_matrix = df.corr()
-    sea.heatmap(corr_matrix, annot=True)
-    plt.show()
-    if verbose:
-        print("\nCorrelation of each column to MPG (the target).")
-        print(corr_matrix['MPG'])
-
 def print_pretty_metrics(context, metrics):
     metrics_string=dumps(metrics, indent=2)
     print(
         f"{context}: {metrics_string}"
     )
+
+def save_metrics_to_file(context, metrics, filename):
+    metrics_string=dumps(metrics, indent=2)
+    with open(filename, "a", encoding = "utf-8") as f:
+        f.write(f"{context}: {metrics_string}\n")
 
 def read_args():
     parser = argparse.ArgumentParser(description='Process some integers.')

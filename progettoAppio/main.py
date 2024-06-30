@@ -57,20 +57,27 @@ def main():
    
     linear = LR(X_train, y_train, X_test, y_test)
     linear.train()
-    # print(f"Linear:{json.dumps(linear.get_scores(),indent=2)}")
-    utils.print_pretty_metrics("Linear regression", linear.get_scores())
+    linear_metrics = linear.get_scores()
+    utils.print_pretty_metrics("Linear regression", linear_metrics)
+    utils.save_metrics_to_file("Linear regression", linear_metrics, parameters.FILENAME_SAVE_METRICS)
 
     knn = KNNR(X_train, y_train, X_test, y_test)
     knn.train()
-    utils.print_pretty_metrics("K nearest neighbors", knn.get_scores())
+    knn_metrics = knn.get_scores()
+    utils.print_pretty_metrics("K nearest neighbors", knn_metrics)
+    utils.save_metrics_to_file("K nearest neighbors", knn_metrics, parameters.FILENAME_SAVE_METRICS)
 
     dt = DT(X_train, y_train, X_test, y_test)
     dt.train()
-    utils.print_pretty_metrics("Decision Tree", dt.get_scores())
+    dt_metrics = dt.get_scores()
+    utils.print_pretty_metrics("Decision Tree", dt_metrics)
+    utils.save_metrics_to_file("Decision Tree", dt_metrics, parameters.FILENAME_SAVE_METRICS)
 
     svr = SVM(X_train, y_train, X_test, y_test)
     svr.train()
-    utils.print_pretty_metrics("Support Vector Regression", svr.get_scores())
+    svr_metrics = svr.get_scores()
+    utils.print_pretty_metrics("Support Vector Regression", svr_metrics)
+    utils.save_metrics_to_file("Support Vector Regression", svr_metrics, parameters.FILENAME_SAVE_METRICS)
 
 if __name__=='__main__':
     main()

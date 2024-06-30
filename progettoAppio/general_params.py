@@ -1,2 +1,3 @@
 TARGET = 'critical_temp'
 FEATURE_CORRELATION_THRESHOLD = 0.5
+FILENAME_SAVE_METRICS = "log/log_metrics"

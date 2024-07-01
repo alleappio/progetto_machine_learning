@@ -27,6 +27,9 @@ class GeneralStrategy:
             "test": self.get_metrics(self.y_pred_test, self.y_test)
         }
         return scores
+    
+    def get_model(self):
+        return self.reg
 
 class LR(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):

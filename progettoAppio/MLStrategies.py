@@ -38,12 +38,15 @@ class LR(GeneralStrategy):
     
 
 class KNNR(GeneralStrategy):
-    def __init__(self, X_train, y_train, X_test, y_test):
+    def __init__(self, X_train, y_train, X_test, y_test, neighbors_number=5, weights = 'uniform'):
         self.X_train=X_train
         self.y_train=y_train
         self.X_test=X_test
         self.y_test=y_test
-        self.reg = KNeighborsRegressor()
+        self.reg = KNeighborsRegressor(
+            n_neighbors = neighbors_number,
+            weights = weights
+        )
     
 
 class DT(GeneralStrategy):

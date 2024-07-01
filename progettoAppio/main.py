@@ -17,7 +17,6 @@ from MLStrategies import SVM
 
 def main():
     args = utils.read_args()
-
     if os.path.isfile(args.dataset_path):
         dataset = pd.read_csv(args.dataset_path)
     else:
@@ -55,6 +54,8 @@ def main():
         print(X_test)
         print(y_test)
    
+    utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, args.clean_file)
+
     linear = LR(X_train, y_train, X_test, y_test)
     linear.train()
     linear_metrics = linear.get_scores()

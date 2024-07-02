@@ -43,12 +43,13 @@ def run_model(model, model_name, X_train, y_train):
         s=FeatureSelectorWrapper(X_train, y_train, model.get_model())
         if parameters.VERBOSE:
             print("Cutting dataset for feature selection")
-        s.cut_dataset(parameters.FEATURE_SELECTION_CUT_STEP, parameters.FEATURE_SELECTION_CUT_DROP_NUM)
+        s.cut_dataset(parameters.FEATURE_SELECTION_CUT_NUMBER)
         if parameters.VERBOSE:
             print(f"Calculating feature selection for model: {model_name}")
         s.calc_rfe()
         
         selected_features = s.get_selected_features()
+        utils.save_features_to_file(f"{model_name} wrapper method", selected_features, parameters.FILENAME_SAVE_FEATURES)
         if parameters.VERBOSE:
             print(f"selected feaures: {selected_features}")
         
@@ -71,6 +72,7 @@ def main():
     if parameters.FEATURE_SELECTION_METHOD == 'filter': 
         s = FeatureSelectorFilter(dataset, parameters.TARGET)
         selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)
+        utils.save_features_to_file(f"filter method", selected_features, parameters.FILENAME_SAVE_FEATURES)
        
         if parameters.VERBOSE:
             print(f"selected feaures: {selected_features}")

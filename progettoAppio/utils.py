@@ -25,6 +25,11 @@ def save_metrics_to_file(context, metrics, filename):
     with open(filename, "a", encoding = "utf-8") as f:
         f.write(f"\n{context}: {metrics_string}\n")
 
+def save_features_to_file(context, features, filename):
+    features_string=dumps(list(features), indent=2)
+    with open(filename, "a", encoding = "utf-8") as f:
+        f.write(f"\n{context}: {features_string}\n")
+
 def read_args():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--dataset_path', type=str,

@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
 
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.svm import SVR
-
 from sklearn.feature_selection import RFE
+from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 # from mlxtend.feature_selection import ExhaustiveFeatureSelector as EFS
@@ -34,12 +30,17 @@ class FeatureSelectorWrapper:
         self.X_train = X_train
         self.y_train = y_train
         self.reg = strategy
- 
-        self.rfe = RFE(estimator = self.reg, n_features_to_select=n_features, step=1)
+        self.feature_selector = SequentialFeatureSelector(estimator = self.reg, n_features_to_select=n_features, scoring='neg_mean_absolute_error', n_jobs=-1)
     
+    def cut_dataset(self):
+        ...
+
     def calc_rfe(self):
         # self.pipe.fit(self.X_train, self.y_train)
-        self.rfe.fit(self.X_train, self.y_train)
+        self.feature_selector.fit(self.X_train, self.y_train)
 
     def get_new_X(self):
-        return self.rfe.transform(self.X_train)
+        return self.feature_selector.transform(self.X_train)
+
+    def get_selected_features(self):
+        return self.feature_selector.get_feature_names_out()

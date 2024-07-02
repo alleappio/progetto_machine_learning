@@ -8,9 +8,11 @@ import general_params as parameters
 from prepare import PrepareData
 from feature_selector import FeatureSelectorFilter
 from feature_selector import FeatureSelectorWrapper
+
 from MLStrategies import LR
 from MLStrategies import KNNR
 from MLStrategies import DT
+from MLStrategies import RF
 from MLStrategies import SVM
 
 # DataSet link: https://archive.ics.uci.edu/dataset/464/superconductivty+data
@@ -21,16 +23,16 @@ def get_dataset(args):
         dataset = pd.read_csv(args.dataset_path)
     else:
         # fetch dataset
-        if args.verbose:
+        if parameters.VERBOSE:
             print("fetch dataset")
         superconductivty_data = fetch_ucirepo(id=464)
 
         # data (as pandas dataframes)
-        if args.verbose:
+        if parameters.VERBOSE:
             print("saving data in veriable")
         dataset = superconductivty_data.data.original
     
-        if args.verbose:
+        if parameters.VERBOSE:
             print("saving data in file")
         dataset.to_csv("DataSet/superconductvty.csv", index=False)
     
@@ -39,10 +41,22 @@ def get_dataset(args):
 def run_model(model, model_name, X_train, y_train):
     if parameters.FEATURE_SELECTION_METHOD == 'wrapper':
         s=FeatureSelectorWrapper(X_train, y_train, model.get_model())
-        s.cut_dataset()
+        if parameters.VERBOSE:
+            print("Cutting dataset for feature selection")
+        s.cut_dataset(parameters.FEATURE_SELECTION_CUT_STEP, parameters.FEATURE_SELECTION_CUT_DROP_NUM)
+       
+        if parameters.VERBOSE:
+            print("Calculating feature selection")
         s.calc_rfe()
-        model.set_selected_features(s.get_selected_features())
+        
+        selected_features = s.get_selected_features()
+        if parameters.VERBOSE:
+            print(f"selected feaures: {selected_features}")
+        
+        model.set_selected_features(selected_features)
     
+    if parameters.VERBOSE:
+        print(f"Training model{model_name}")
     model.train()
     model_metrics = model.get_scores()
     utils.print_pretty_metrics(model_name, model_metrics)
@@ -50,6 +64,7 @@ def run_model(model, model_name, X_train, y_train):
 
 def main():
     args = utils.read_args()
+
     dataset = get_dataset(args)
      
     utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, args.clean_file) 
@@ -58,8 +73,9 @@ def main():
         s = FeatureSelectorFilter(dataset, parameters.TARGET)
         selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)
        
-        #if args.verbose:
-        print(f"selected feaures: {selected_features}")
+        if parameters.VERBOSE:
+            print(f"selected feaures: {selected_features}")
+        
         new_data = dataset[selected_features]
         utils.print_info(new_data)
         # Prepare the dataset
@@ -68,11 +84,6 @@ def main():
         X_train, y_train = new_data.get_train_data()
         # test data
         X_test, y_test = new_data.get_test_data()
-        if args.verbose: 
-            print(X_train)
-            print(y_train)
-            print(X_test)
-            print(y_test)
     
     if parameters.FEATURE_SELECTION_METHOD == 'wrapper': 
         new_data = PrepareData(dataset, parameters.TARGET)
@@ -90,6 +101,9 @@ def main():
     
     dt = DT(X_train, y_train, X_test, y_test)
     run_model(dt, 'Decision tree', X_train, y_train) 
+    
+    rf = RF(X_train, y_train, X_test, y_test)
+    run_model(rf, 'Random forest', X_train, y_train) 
 
     svr = SVM(X_train, y_train, X_test, y_test)
     run_model(svr, 'Support Vector Machine', X_train, y_train)

@@ -8,6 +8,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn import metrics
 
+from matplotlib import pyplot as plt
+
 class GeneralStrategy:
     def train(self):
         self.reg = self.reg.fit(self.X_train,self.y_train)
@@ -28,6 +30,9 @@ class GeneralStrategy:
             "test": self.get_metrics(self.y_pred_test, self.y_test)
         }
         return scores
+    
+    def get_predictions(self):
+        return (self.y_pred_test, self.y_test)
     
     def get_model(self):
         return self.reg

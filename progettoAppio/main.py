@@ -1,5 +1,4 @@
 from ucimlrepo import fetch_ucirepo
-from sklearn.linear_model import LinearRegression
 import pandas as pd
 import os
 
@@ -8,6 +7,7 @@ import general_params as parameters
 from prepare import PrepareData
 from feature_selector import FeatureSelectorFilter
 from feature_selector import FeatureSelectorWrapper
+from plotter import Plotter
 
 from MLStrategies import LR
 from MLStrategies import KNNR
@@ -38,7 +38,7 @@ def get_dataset(args):
     
     return dataset
 
-def run_model(model, model_name, X_train, y_train):
+def run_model(model, model_name, X_train, y_train, plotter_obj):
     if parameters.FEATURE_SELECTION_METHOD == 'wrapper':
         s=FeatureSelectorWrapper(X_train, y_train, model.get_model())
         if parameters.VERBOSE:
@@ -61,12 +61,16 @@ def run_model(model, model_name, X_train, y_train):
     model_metrics = model.get_scores()
     utils.print_pretty_metrics(model_name, model_metrics)
     utils.save_metrics_to_file(model_name, model_metrics, parameters.FILENAME_SAVE_METRICS)
+    plotter_obj.add_prediction(model_name, model.get_predictions()[0], model.get_predictions()[1])
+    
 
 def main():
     args = utils.read_args()
 
     dataset = get_dataset(args)
-     
+    
+    plotter_obj = Plotter()
+
     utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, args.clean_file) 
     
     if parameters.FEATURE_SELECTION_METHOD == 'filter': 
@@ -95,19 +99,20 @@ def main():
     
 
     linear = LR(X_train, y_train, X_test, y_test)
-    run_model(linear, 'Linear regression', X_train, y_train) 
+    run_model(linear, 'Linear regression', X_train, y_train, plotter_obj) 
     
     knn = KNNR(X_train, y_train, X_test, y_test)
-    run_model(knn, 'K Nearest Neighbors', X_train, y_train) 
+    run_model(knn, 'K Nearest Neighbors', X_train, y_train, plotter_obj) 
     
     dt = DT(X_train, y_train, X_test, y_test)
-    run_model(dt, 'Decision tree', X_train, y_train) 
+    run_model(dt, 'Decision tree', X_train, y_train, plotter_obj) 
     
     rf = RF(X_train, y_train, X_test, y_test)
-    run_model(rf, 'Random forest', X_train, y_train) 
+    run_model(rf, 'Random forest', X_train, y_train, plotter_obj) 
 
     # svr = SVM(X_train, y_train, X_test, y_test)
     # run_model(svr, 'Support Vector Machine', X_train, y_train)
-
+    
+    plotter_obj.show()
 if __name__=='__main__':
     main()

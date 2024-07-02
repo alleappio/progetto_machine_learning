@@ -44,9 +44,8 @@ def run_model(model, model_name, X_train, y_train):
         if parameters.VERBOSE:
             print("Cutting dataset for feature selection")
         s.cut_dataset(parameters.FEATURE_SELECTION_CUT_STEP, parameters.FEATURE_SELECTION_CUT_DROP_NUM)
-       
         if parameters.VERBOSE:
-            print("Calculating feature selection")
+            print(f"Calculating feature selection for model: {model_name}")
         s.calc_rfe()
         
         selected_features = s.get_selected_features()
@@ -56,7 +55,7 @@ def run_model(model, model_name, X_train, y_train):
         model.set_selected_features(selected_features)
     
     if parameters.VERBOSE:
-        print(f"Training model{model_name}")
+        print(f"Training model {model_name}")
     model.train()
     model_metrics = model.get_scores()
     utils.print_pretty_metrics(model_name, model_metrics)
@@ -105,8 +104,8 @@ def main():
     rf = RF(X_train, y_train, X_test, y_test)
     run_model(rf, 'Random forest', X_train, y_train) 
 
-    svr = SVM(X_train, y_train, X_test, y_test)
-    run_model(svr, 'Support Vector Machine', X_train, y_train)
+    # svr = SVM(X_train, y_train, X_test, y_test)
+    # run_model(svr, 'Support Vector Machine', X_train, y_train)
 
 if __name__=='__main__':
     main()

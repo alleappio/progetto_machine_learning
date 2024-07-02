@@ -5,6 +5,8 @@ import seaborn as sea
 from json import dumps
 import datetime
 
+import general_params as parameters
+
 def init_log_file(filename, title, clean=False):
     if clean:
         with open(filename, "w", encoding = "utf-8") as f:
@@ -32,9 +34,9 @@ def read_args():
     parser.add_argument("--cv", type=int, default=5)
     parser.add_argument("--title", type=str, default=str(datetime.datetime.now()))
     parser.add_argument("--clean_file", type=str2bool, default=False)
-
     args = parser.parse_args()
-
+    
+    parameters.VERBOSE = args.verbose
     return args
 
 def print_info(df: pd.DataFrame):

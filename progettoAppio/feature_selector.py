@@ -30,21 +30,26 @@ class FeatureSelectorWrapper:
         self.X_train = X_train
         self.y_train = y_train
         self.reg = strategy
-        self.feature_selector = SequentialFeatureSelector(estimator = self.reg, n_features_to_select=n_features, scoring='neg_mean_absolute_error')
+        self.feature_selector = SequentialFeatureSelector(estimator = self.reg, n_features_to_select=n_features, scoring='neg_mean_absolute_error', n_job=-1)
     
     def cut_dataset(self, step=10, drop_num=1):
         i=0
         if drop_num>step:
             print("Invalid parameters in cut database")
             exit()
-        dataset_indexes=list(self.X_train.index.values)
-        print(f"before cut: {self.X_train.shape}")
+        print(f"before cut: \n \t X_train: {self.X_train.shape} \n \t y_train: {self.y_train.shape}")
+        count=0
         while i<self.X_train.shape[0]:
-            for j in range(drop_num):
-                self.X_train = self.X_train.drop(labels=dataset_indexes[i+j], axis=0)
-                self.y_train = self.y_train.drop(labels=dataset_indexes[i+j], axis=0)
+            # print(self.X_train.iloc[i])
+            for j in range(i,i+step-1):
+                self.X_train = self.X_train.drop(labels=j, axis=0)
+                self.y_train = self.y_train.drop(labels=j, axis=0)
+                count+=1
+            # print(f"drop_count:{count}")
             i+=step
-        print(f"after cut: {self.X_train.shape}")
+        # print(f"total drop_count:{count}")
+        # print(self.X_train)
+        print(f"after cut: \n \t X_train: {self.X_train.shape} \n \t y_train: {self.y_train.shape}")
 
     def calc_rfe(self):
         # self.pipe.fit(self.X_train, self.y_train)

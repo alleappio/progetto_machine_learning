@@ -42,7 +42,7 @@ def print_info(df: pd.DataFrame):
     print(df.describe())
     print(df.head())
     print(df.columns)
-
+    print(len(df.columns))
 
 def str2bool(v):
     if isinstance(v, bool):

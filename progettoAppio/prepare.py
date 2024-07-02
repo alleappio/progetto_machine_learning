@@ -7,6 +7,8 @@ class PrepareData:
         self.data = data
         self.target = target
         self.train_data, self.test_data = train_test_split(self.data)
+        self.train_data = self.train_data.reset_index(drop=True)
+        self.test_data=self.test_data.reset_index(drop=True)
         
     def get_train_data(self):
         y_train = self.train_data[self.target]

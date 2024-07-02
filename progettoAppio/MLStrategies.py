@@ -30,6 +30,10 @@ class GeneralStrategy:
     
     def get_model(self):
         return self.reg
+    
+    def set_selected_features(self, selected_features):
+        self.X_train = self.X_train[selected_features]
+        self.X_test = self.X_test[selected_features]
 
 class LR(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -39,17 +43,17 @@ class LR(GeneralStrategy):
         self.y_test=y_test
         self.reg = LinearRegression()
     
-
 class KNNR(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test, neighbors_number=5, weights = 'uniform'):
         self.X_train=X_train
         self.y_train=y_train
         self.X_test=X_test
         self.y_test=y_test
-        self.reg = KNeighborsRegressor(
-            n_neighbors = neighbors_number,
-            weights = weights
-        )
+        #self.reg = KNeighborsRegressor(
+        #    n_neighbors = neighbors_number,
+        #    weights = weights
+        #)
+        self.reg = KNeighborsRegressor()
     
 
 class DT(GeneralStrategy):

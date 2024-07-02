@@ -34,9 +34,11 @@ def read_args():
     parser.add_argument("--cv", type=int, default=5)
     parser.add_argument("--title", type=str, default=str(datetime.datetime.now()))
     parser.add_argument("--clean_file", type=str2bool, default=False)
+    parser.add_argument("--feature_selection", type=str, default='filter')
     args = parser.parse_args()
     
     parameters.VERBOSE = args.verbose
+    parameters.FEATURE_SELECTION_METHOD = args.feature_selection
     return args
 
 def print_info(df: pd.DataFrame):

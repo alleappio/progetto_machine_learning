@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn import metrics
 
@@ -54,7 +55,6 @@ class KNNR(GeneralStrategy):
         #    weights = weights
         #)
         self.reg = KNeighborsRegressor()
-    
 
 class DT(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):
@@ -63,7 +63,14 @@ class DT(GeneralStrategy):
         self.X_test=X_test
         self.y_test=y_test
         self.reg = DecisionTreeRegressor()
-    
+
+class RF(GeneralStrategy):
+    def __init__(self, X_train, y_train, X_test, y_test):
+        self.X_train=X_train
+        self.y_train=y_train
+        self.X_test=X_test
+        self.y_test=y_test
+        self.reg = RandomForestRegressor()
 
 class SVM(GeneralStrategy):
     def __init__(self, X_train, y_train, X_test, y_test):

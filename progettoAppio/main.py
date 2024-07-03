@@ -87,6 +87,8 @@ def main():
         new_data = PrepareData(new_data, parameters.TARGET)
         # train data
         X_train, y_train = new_data.get_train_data()
+        # val data
+        X_train, y_train = new_data.get_train_data()
         # test data
         X_test, y_test = new_data.get_test_data()
     
@@ -94,23 +96,33 @@ def main():
         new_data = PrepareData(dataset, parameters.TARGET)
         # train data
         X_train, y_train = new_data.get_train_data()
+        # val data
+        X_train, y_train = new_data.get_train_data()
         # test data
         X_test, y_test = new_data.get_test_data()
     
+    if parameters.FEATURE_SELECTION_METHOD == 'None': 
+        new_data = PrepareData(dataset, parameters.TARGET)
+        # train data
+        X_train, y_train = new_data.get_train_data()
+        # val data
+        X_train, y_train = new_data.get_train_data()
+        # test data
+        X_test, y_test = new_data.get_test_data()
 
-    linear = LR(X_train, y_train, X_test, y_test)
+    linear = LR(X_train, y_train, X_val, y_val)
     run_model(linear, 'Linear regression', X_train, y_train, plotter_obj) 
     
-    knn = KNNR(X_train, y_train, X_test, y_test)
+    knn = KNNR(X_train, y_train, X_val, y_val)
     run_model(knn, 'K Nearest Neighbors', X_train, y_train, plotter_obj) 
     
-    dt = DT(X_train, y_train, X_test, y_test)
+    dt = DT(X_train, y_train, X_val, y_val)
     run_model(dt, 'Decision tree', X_train, y_train, plotter_obj) 
     
-    rf = RF(X_train, y_train, X_test, y_test)
+    rf = RF(X_train, y_train, X_val, y_val)
     run_model(rf, 'Random forest', X_train, y_train, plotter_obj) 
 
-    # svr = SVM(X_train, y_train, X_test, y_test)
+    # svr = SVM(X_train, y_train, X_val, y_val)
     # run_model(svr, 'Support Vector Machine', X_train, y_train)
     
     plotter_obj.show()

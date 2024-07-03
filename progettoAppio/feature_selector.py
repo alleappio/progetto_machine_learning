@@ -24,7 +24,7 @@ class FeatureSelectorFilter:
     
             
 class FeatureSelectorWrapper:
-    def __init__(self, X_train, y_train, strategy, n_features=20):
+    def __init__(self, X_train, y_train, strategy, n_features='auto'):
         self.X_train = X_train
         self.y_train = y_train
         self.reg = strategy

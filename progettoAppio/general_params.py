@@ -6,4 +6,4 @@ FILENAME_SAVE_FEATURES = "log/log_features"
 STRATEGIES_LIST = ['LinearRegression', 'KNeighborsRegressor', 'DecisionTreeRegressor', 'SVR']
 #FEATURE_SELECTION_METHOD = 'wrapper'
 FEATURE_SELECTION_METHOD = 'filter'
-FEATURE_SELECTION_CUT_NUMBER = 500
+FEATURE_SELECTION_CUT_FRACTION = 0.5

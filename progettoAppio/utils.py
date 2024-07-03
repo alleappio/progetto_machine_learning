@@ -30,6 +30,11 @@ def save_features_to_file(context, features, filename):
     with open(filename, "a", encoding = "utf-8") as f:
         f.write(f"\n{context}: {features_string}\n")
 
+def cut_dataset(X, y, records_fraction):
+    X = X.sample(frac=records_fraction)
+    y = y[X.index]
+    return X,y
+
 def read_args():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--dataset_path', type=str,

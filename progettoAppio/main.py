@@ -38,7 +38,7 @@ def get_dataset(args):
     
     return dataset
 
-def run_model(model, model_name, X_train, y_train, plotter_obj):
+def run_model(model, model_name, X_train, y_train, grid, plotter_obj):
     if parameters.FEATURE_SELECTION_METHOD == 'wrapper':
         s=FeatureSelectorWrapper(X_train, y_train, model.get_model())
         if parameters.VERBOSE:
@@ -62,7 +62,6 @@ def run_model(model, model_name, X_train, y_train, plotter_obj):
     utils.print_pretty_metrics(model_name, model_metrics)
     utils.save_metrics_to_file(model_name, model_metrics, parameters.FILENAME_SAVE_METRICS)
     plotter_obj.add_prediction(model_name, model.get_predictions()[0], model.get_predictions()[1])
-    
 
 def main():
     args = utils.read_args()
@@ -121,8 +120,15 @@ def main():
     run_model(dt, 'Decision tree', X_train, y_train, plotter_obj) 
     """
 
+    grid = {
+        'max_depth': [None, 10, 20, 30, 40, 50],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'criterion': ['friedman_mse', 'poisson', 'squared_error', 'absolute_error']
+    }
+    
     rf = RF(X_train, y_train, X_val, y_val)
-    run_model(rf, 'Random forest', X_train, y_train, plotter_obj) 
+    run_model(rf, 'Random forest', X_train, y_train, grid, plotter_obj) 
 
     # svr = SVM(X_train, y_train, X_val, y_val)
     # run_model(svr, 'Support Vector Machine', X_train, y_train)

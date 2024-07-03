@@ -43,9 +43,10 @@ def run_model(model, model_name, X_train, y_train, grid, plotter_obj):
         s=FeatureSelectorWrapper(X_train, y_train, model.get_model())
         if parameters.VERBOSE:
             print("Cutting dataset for feature selection")
-        s.cut_dataset(parameters.FEATURE_SELECTION_CUT_NUMBER)
+        X_train, y_train = utils.cut_dataset(X_train, y_train, parameters.FEATURE_SELECTION_CUT_FRACTION)
         if parameters.VERBOSE:
             print(f"Calculating feature selection for model: {model_name}")
+        s=FeatureSelectorWrapper(X_train, y_train, model.get_model())
         s.calc_rfe()
         
         selected_features = s.get_selected_features()

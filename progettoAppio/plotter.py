@@ -11,7 +11,15 @@ class Plotter:
         self.prediction_lists[title] = [y_pred, y_test]
 
     def show(self):
+        figure, axis = plt.subplots(2, 2)
+        x, y = 0, 0
         for i in self.prediction_lists:
-            print(i)
-            plt.plot(self.prediction_lists[i][0], self.prediction_lists[i][1], 'bo', label=i)
-            plt.show()
+            plt.figure(figure)
+            axis[x,y].plot(self.prediction_lists[i][0], self.prediction_lists[i][1], 'bo')
+            axis[x,y].set_title(i)
+            if(x==1):
+                y+=1
+                x=0
+            else:
+                x+=1
+        plt.show()

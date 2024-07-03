@@ -28,7 +28,7 @@ class FeatureSelectorWrapper:
         self.X_train = X_train
         self.y_train = y_train
         self.reg = strategy
-        self.feature_selector = SequentialFeatureSelector(estimator = self.reg, n_features_to_select=n_features, scoring='neg_mean_absolute_error', n_jobs=-1)
+        self.feature_selector = SequentialFeatureSelector(estimator = self.reg, n_features_to_select=n_features, scoring='neg_mean_squared_error', n_jobs=-1)
     
     def cut_dataset(self, records_number):
         self.X_train = self.X_train.sample(n=records_number)

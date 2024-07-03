@@ -88,7 +88,7 @@ def main():
         # train data
         X_train, y_train = new_data.get_train_data()
         # val data
-        X_train, y_train = new_data.get_train_data()
+        X_val, y_val = new_data.get_val_data()
         # test data
         X_test, y_test = new_data.get_test_data()
     
@@ -97,7 +97,7 @@ def main():
         # train data
         X_train, y_train = new_data.get_train_data()
         # val data
-        X_train, y_train = new_data.get_train_data()
+        X_val, y_val = new_data.get_val_data()
         # test data
         X_test, y_test = new_data.get_test_data()
     
@@ -106,10 +106,11 @@ def main():
         # train data
         X_train, y_train = new_data.get_train_data()
         # val data
-        X_train, y_train = new_data.get_train_data()
+        X_val, y_val = new_data.get_val_data()
         # test data
         X_test, y_test = new_data.get_test_data()
-
+    
+    """
     linear = LR(X_train, y_train, X_val, y_val)
     run_model(linear, 'Linear regression', X_train, y_train, plotter_obj) 
     
@@ -118,7 +119,8 @@ def main():
     
     dt = DT(X_train, y_train, X_val, y_val)
     run_model(dt, 'Decision tree', X_train, y_train, plotter_obj) 
-    
+    """
+
     rf = RF(X_train, y_train, X_val, y_val)
     run_model(rf, 'Random forest', X_train, y_train, plotter_obj) 
 

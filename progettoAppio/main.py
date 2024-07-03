@@ -4,7 +4,7 @@ import os
 
 import utils
 import general_params as parameters
-from prepare import PrepareData
+from prepare import PrepareData 
 from feature_selector import FeatureSelectorFilter
 from feature_selector import FeatureSelectorWrapper
 from plotter import Plotter
@@ -72,7 +72,7 @@ def main():
     plotter_obj = Plotter()
 
     utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, args.clean_file) 
-    
+
     if parameters.FEATURE_SELECTION_METHOD == 'filter': 
         s = FeatureSelectorFilter(dataset, parameters.TARGET)
         selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)

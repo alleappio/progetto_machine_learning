@@ -3,8 +3,6 @@ import numpy as np
 
 from sklearn.feature_selection import RFE
 from sklearn.feature_selection import SequentialFeatureSelector
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler
 # from mlxtend.feature_selection import ExhaustiveFeatureSelector as EFS
 
 class FeatureSelectorFilter:

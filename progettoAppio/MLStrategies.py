@@ -14,6 +14,9 @@ class GeneralStrategy:
     def train(self):
         self.reg = self.reg.fit(self.X_train,self.y_train)
     
+    def cv_train(self, grid):
+        grid_model = GridSearchCV(estimator = self.reg, param_grid = grid, cv = 5, scoring = 'neg_mean_squared_error', n_job = -1)
+
     def get_metrics(self, y_val, y_pred):
         calculated_metrics={
             "MAE": metrics.mean_absolute_error(y_val, y_pred),

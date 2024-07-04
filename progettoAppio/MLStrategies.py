@@ -25,6 +25,7 @@ class GeneralStrategy:
             "MAE": metrics.mean_absolute_error(y_test, y_pred),
             "MSE": metrics.mean_squared_error(y_test, y_pred),
             "RMSE": np.sqrt(metrics.mean_squared_error(y_test, y_pred)),
+            "R2": metrics.r2_score(y_test,y_pred),
         }
         return calculated_metrics
     

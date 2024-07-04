@@ -30,12 +30,7 @@ class FeatureSelectorWrapper:
         self.reg = strategy
         self.feature_selector = SequentialFeatureSelector(estimator = self.reg, n_features_to_select=n_features, scoring='neg_mean_squared_error', n_jobs=-1)
     
-    def cut_dataset(self, records_number):
-        self.X_train = self.X_train.sample(n=records_number)
-        self.y_train = self.y_train[self.X_train.index] 
-
-    def calc_rfe(self):
-        # self.pipe.fit(self.X_train, self.y_train)
+    def calc_sfs(self):
         self.feature_selector.fit(self.X_train, self.y_train)
 
     def get_new_X(self):

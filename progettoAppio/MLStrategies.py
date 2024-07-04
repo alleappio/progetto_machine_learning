@@ -17,29 +17,29 @@ class GeneralStrategy:
     
     def cv_train(self):
         grid_search = GridSearchCV(estimator = self.reg, param_grid = self.param_grid, cv = 5, scoring = 'neg_mean_squared_error', n_jobs = -1)
-        self.reg = grid_search.fit(self.X_train, self.y_train)
-        self.best_cv = grid_search.best_estimator_
+        grid_search = grid_search.fit(self.X_train, self.y_train)
+        self.reg = grid_search.best_estimator_
 
-    def get_metrics(self, y_val, y_pred):
+    def get_metrics(self, y_test, y_pred):
         calculated_metrics={
-            "MAE": metrics.mean_absolute_error(y_val, y_pred),
-            "MSE": metrics.mean_squared_error(y_val, y_pred),
-            "RMSE": np.sqrt(metrics.mean_squared_error(y_val, y_pred)),
+            "MAE": metrics.mean_absolute_error(y_test, y_pred),
+            "MSE": metrics.mean_squared_error(y_test, y_pred),
+            "RMSE": np.sqrt(metrics.mean_squared_error(y_test, y_pred)),
         }
         return calculated_metrics
     
-    def get_scores(self, X_val, y_val):
-        self.y_val = y_val
+    def get_scores(self, X_test, y_test):
+        self.y_test = y_test
         self.y_pred_train = self.reg.predict(self.X_train)
-        self.y_pred_val = self.reg.predict(X_val)
+        self.y_pred_test = self.reg.predict(X_test)
         scores={
             "train": self.get_metrics(self.y_pred_train, self.y_train),
-            "test": self.get_metrics(self.y_pred_val, y_val)
+            "test": self.get_metrics(self.y_pred_test, y_test)
         }
         return scores
     
     def get_predictions(self):
-        return (self.y_pred_val, self.y_val)
+        return (self.y_pred_test, self.y_test)
     
     def get_model_name(self):
         return self.model_name

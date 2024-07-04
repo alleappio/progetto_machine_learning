@@ -23,3 +23,7 @@ class Plotter:
             else:
                 x+=1
         plt.show()
+        self.plt = plt
+
+    def save_plot(self, save_dir, title):
+        plt.savefig(filename)

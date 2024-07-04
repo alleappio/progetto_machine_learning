@@ -5,17 +5,20 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVR
-from sklearn import metrics
 
+from sklearn import metrics
 from matplotlib import pyplot as plt
 
 class GeneralStrategy:
     def train(self):
-        self.reg = self.reg.fit(self.X_train,self.y_train)
+        self.reg = self.reg.fit(self.X_train, self.y_train)
     
-    def cv_train(self, grid):
-        grid_model = GridSearchCV(estimator = self.reg, param_grid = grid, cv = 5, scoring = 'neg_mean_squared_error', n_job = -1)
+    def cv_train(self):
+        grid_search = GridSearchCV(estimator = self.reg, param_grid = self.param_grid, cv = 5, scoring = 'neg_mean_squared_error', n_jobs = -1)
+        self.reg = grid_search.fit(self.X_train, self.y_train)
+        self.best_cv = grid_search.best_estimator_
 
     def get_metrics(self, y_val, y_pred):
         calculated_metrics={
@@ -25,66 +28,65 @@ class GeneralStrategy:
         }
         return calculated_metrics
     
-    def get_scores(self):
+    def get_scores(self, X_val, y_val):
+        self.y_val = y_val
         self.y_pred_train = self.reg.predict(self.X_train)
-        self.y_pred_test = self.reg.predict(self.X_test)
+        self.y_pred_val = self.reg.predict(X_val)
         scores={
             "train": self.get_metrics(self.y_pred_train, self.y_train),
-            "test": self.get_metrics(self.y_pred_test, self.y_test)
+            "test": self.get_metrics(self.y_pred_val, y_val)
         }
         return scores
     
     def get_predictions(self):
-        return (self.y_pred_test, self.y_test)
+        return (self.y_pred_val, self.y_val)
+    
+    def get_model_name(self):
+        return self.model_name
     
     def get_model(self):
         return self.reg
     
+    def get_best_cv(self):
+        return self.best_cv
+
+    def set_model(self, model):
+        self.reg = model
+
+    def set_X_y_train(self,X,y):
+        self.X_train = X
+        self.y_train = y
+
     def set_selected_features(self, selected_features):
+        self.selected_features = selected_features
         self.X_train = self.X_train[selected_features]
-        self.X_test = self.X_test[selected_features]
+    
+    def set_param_grid(self, grid):
+        self.param_grid = grid
+
 
 class LR(GeneralStrategy):
-    def __init__(self, X_train, y_train, X_test, y_test):
-        self.X_train=X_train
-        self.y_train=y_train
-        self.X_test=X_test
-        self.y_test=y_test
+    def __init__(self):
         self.reg = LinearRegression()
+        self.model_name = "Linear regression"
     
 class KNNR(GeneralStrategy):
-    def __init__(self, X_train, y_train, X_test, y_test, neighbors_number=5, weights = 'uniform'):
-        self.X_train=X_train
-        self.y_train=y_train
-        self.X_test=X_test
-        self.y_test=y_test
-        #self.reg = KNeighborsRegressor(
-        #    n_neighbors = neighbors_number,
-        #    weights = weights
-        #)
+    def __init__(self):
         self.reg = KNeighborsRegressor()
+        self.model_name = "K Nearest Neighbors"
 
 class DT(GeneralStrategy):
-    def __init__(self, X_train, y_train, X_test, y_test):
-        self.X_train=X_train
-        self.y_train=y_train
-        self.X_test=X_test
-        self.y_test=y_test
+    def __init__(self):
         self.reg = DecisionTreeRegressor()
+        self.model_name = "Decision tree"
 
 class RF(GeneralStrategy):
-    def __init__(self, X_train, y_train, X_test, y_test):
-        self.X_train=X_train
-        self.y_train=y_train
-        self.X_test=X_test
-        self.y_test=y_test
+    def __init__(self):
         self.reg = RandomForestRegressor()
+        self.model_name = "Random forest"
 
 class SVM(GeneralStrategy):
-    def __init__(self, X_train, y_train, X_test, y_test):
-        self.X_train=X_train
-        self.y_train=y_train
-        self.X_test=X_test
-        self.y_test=y_test
+    def __init__(self):
         self.reg = SVR()
+        self.model_name = "Support vector machine"
     

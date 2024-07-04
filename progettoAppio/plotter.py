@@ -39,3 +39,8 @@ class Plotter:
                 x+=1
         plt.gcf().set_size_inches(30, 17)
         plt.savefig(f"{save_dir}/{title}", dpi = 65)
+
+    def save_single_plot(self, y_pred, y_test, save_dir, title):
+        plt.plot(y_pred, y_test, 'bo', markersize=5)
+        plt.title(title)
+        plt.savefig(f"{save_dir}/{title}")

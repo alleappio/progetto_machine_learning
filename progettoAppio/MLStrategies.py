@@ -15,8 +15,8 @@ class GeneralStrategy:
     def train(self):
         self.reg = self.reg.fit(self.X_train, self.y_train)
     
-    def cv_train(self):
-        grid_search = GridSearchCV(estimator = self.reg, param_grid = self.param_grid, cv = 5, scoring = 'neg_mean_squared_error', n_jobs = -1)
+    def cv_train(self, scoring_rule):
+        grid_search = GridSearchCV(estimator = self.reg, param_grid = self.param_grid, cv = 5, scoring = scoring_rule, n_jobs = -1)
         grid_search = grid_search.fit(self.X_train, self.y_train)
         self.reg = grid_search.best_estimator_
 

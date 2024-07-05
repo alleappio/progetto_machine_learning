@@ -1,22 +1,22 @@
 
 decision_tree = {
-    'max_depth': [None, 10, 20, 30],
-    'min_samples_split': [2, 5]
+    'estimator__max_depth': [None, 10, 20, 30],
+    'estimator__min_samples_split': [2, 5]
 }
 
 linear_regression = {}
 
 SVR = {
-    'kernel': ['linear', 'rbf'],
-    'C': [1, 10, 100],
-    'gamma': [0.001, 0.01]
+    'estimator__kernel': ['linear', 'rbf'],
+    'estimator__C': [1, 10, 100],
+    'estimator__gamma': [0.001, 0.01]
 }
 
 KNN = {
-    'n_neighbors': [3, 5, 7, 9]
+    'estimator__n_neighbors': [3, 5, 7, 9]
 }        
 
 random_forest = {
-    'n_estimators': [50, 100, 200],  # Numero di alberi nella foresta
-    'max_depth': [10, 20, 30]       # Profondità massima degli alberi
+    'estimator__n_estimators': [50, 100, 200],  # Numero di alberi nella foresta
+    'estimator__max_depth': [10, 20, 30]       # Profondità massima degli alberi
 }

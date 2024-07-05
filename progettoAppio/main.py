@@ -4,6 +4,13 @@ import numpy as np
 import os
 from sklearn.model_selection import cross_validate
 
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVR
+
 import utils
 import param_grids
 import general_params as parameters
@@ -11,6 +18,8 @@ from prepare import PrepareData
 from feature_selector import FeatureSelectorFilter
 from feature_selector import FeatureSelectorWrapper
 from plotter import Plotter
+
+from model_creator import ModelCreator
 
 from MLStrategies import LR
 from MLStrategies import KNNR
@@ -56,9 +65,10 @@ def find_best(models, X_train, y_train):
     decision_rule = 'test_r2'
 
     for model in models:
-        result = cross_validate(model.get_model(), X_train, y_train, cv = 5, scoring = scoring_rules, return_train_score = False, n_jobs=-1)
+        print(model.get_pipe())
+        result = cross_validate(model.get_pipe(), X_train, y_train, cv = 5, scoring = scoring_rules, return_train_score = False, n_jobs=-1)
         results[model] = result
-    
+    print("aaaaaaaaaaaaaaaaaaaaaaa") 
     for model in models:
         current_score = np.mean(results[model][decision_rule]) 
         if current_score > best_score:
@@ -67,34 +77,13 @@ def find_best(models, X_train, y_train):
     
     return models.index(best_model)
 
-def log(model_name, model_metrics, predictions, plotter_obj):
-    utils.print_pretty_metrics(model_name, model_metrics)
-    utils.save_metrics_to_file(model_name, model_metrics, parameters.FILENAME_SAVE_METRICS)
-    plotter_obj.add_prediction(model_name, predictions[0], predictions[1])
-
 def main():
     args = utils.read_args()
-    
+     
     dataset = get_dataset(args)
     
     plotter_obj = Plotter()
-
-    utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, args.clean_file) 
-
-    lr = LR()
-    knn = KNNR()
-    dt = DT()
-    rf = RF()
-    svr = SVM()
-
-    lr.set_param_grid(param_grids.linear_regression)
-    knn.set_param_grid(param_grids.KNN)
-    dt.set_param_grid(param_grids.decision_tree)
-    rf.set_param_grid(param_grids.random_forest)
-    svr.set_param_grid(param_grids.SVR)
     
-    model_list = [lr, knn, dt, rf, svr]
-
     pre_processed_data = PrepareData(dataset, parameters.TARGET) 
     # train data
     X_train, y_train = pre_processed_data.get_train_data()
@@ -102,48 +91,83 @@ def main():
     X_test, y_test = pre_processed_data.get_test_data()
     
     X_train_cut, y_train_cut = utils.cut_dataset(X_train, y_train, parameters.DATASET_CUT_FRACTION)
+    verbose_log(f"X_train_cut:{X_train_cut.shape} y_train_cut:{y_train_cut.shape}") 
+
+    knn = ModelCreator('knn')
+    knn.set_model_estimator(KNeighborsRegressor())
+    knn.set_pipe_estimator()
     
-    if parameters.FEATURE_SELECTION_METHOD == 'filter': 
-        s = FeatureSelectorFilter(dataset, parameters.TARGET)
-        selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)
-        utils.save_features_to_file(f"filter method", selected_features, parameters.FILENAME_SAVE_FEATURES)
-        
-        verbose_log(f"selected feaures: {selected_features}")
-        
-        X_train = X_train[selected_features] 
-        X_train_cut = X_train_cut[selected_features] 
-        X_test = X_test[selected_features]
-        for model in model_list: 
-            model.set_X_y_train(X_train,y_train)
-            model.set_selected_features(selected_features)
+    knn_fs = ModelCreator('knn_fs')
+    knn_fs.set_model_estimator(KNeighborsRegressor())
+    knn_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    knn_fs.set_pipe_estimator()
+    
+    dt = ModelCreator('dt')
+    dt.set_model_estimator(DecisionTreeRegressor())
+    dt.set_pipe_estimator()
+    
+    dt_fs = ModelCreator('dt_fs')
+    dt_fs.set_model_estimator(DecisionTreeRegressor())
+    dt_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    dt_fs.set_pipe_estimator()
 
-    if parameters.FEATURE_SELECTION_METHOD == 'wrapper': 
-        for model in model_list:
-            s=FeatureSelectorWrapper(X_train_cut, y_train_cut, model.get_model())
-            
-            verbose_log(f"Calculating feature selection for model: {model.get_model_name()}")
-            s.calc_sfs()
+    rf = ModelCreator('rf')
+    rf.set_model_estimator(RandomForestRegressor())
+    rf.set_pipe_estimator()
+    
+    rf_fs = ModelCreator('rf_fs')
+    rf_fs.set_model_estimator(RandomForestRegressor())
+    rf_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    rf_fs.set_pipe_estimator()
 
-            selected_features = s.get_selected_features()
-            utils.save_features_to_file(f"{model.get_model_name()} wrapper method", selected_features, parameters.FILENAME_SAVE_FEATURES)
-            verbose_log(f"selected feaures: {selected_features}")
-            
-            model.set_X_y_train(X_train,y_train)
-            model.set_selected_features(selected_features)
+    svr = ModelCreator('svr')
+    svr.set_model_estimator(SVR())
+    svr.set_pipe_estimator()
+    
+    svr_fs = ModelCreator('svr_fs')
+    svr_fs.set_model_estimator(SVR())
+    svr_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    svr_fs.set_pipe_estimator()
+   
+    model_list = [dt, dt_fs,]
+    hparam_dic = {
+        'knn': param_grids.KNN,
+        'dt': param_grids.decision_tree,
+        'rf': param_grids.random_forest,
+        'svr': param_grids.SVR,
+        'knn_fs': param_grids.KNN,
+        'dt_fs': param_grids.decision_tree,
+        'rf_fs': param_grids.random_forest,
+        'svr_fs': param_grids.SVR
+    }
 
-    for model in model_list: 
-        run_model(model, X_train_cut, y_train_cut)
-        print(model.get_model())
-
-    best_model_index = find_best(model_list, X_train, y_train)
+    for model in model_list:
+        verbose_log(f"creating {model.name}")
+        model.assemble_pipe()
+        model.do_pipe_grid_search(hparam_dic[model.name], parameters.GENERAL_SCORING_RULE, parameters.CV, X_train_cut, y_train_cut)
+        verbose_log(f"best {model.name}: {model.get_pipe()}")
+    
+    """ 
+    s = FeatureSelectorFilter(dataset, parameters.TARGET)
+    selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)
+    utils.save_features_to_file(f"filter method", selected_features, parameters.FILENAME_SAVE_FEATURES)
+    verbose_log(f"selected feaures: {selected_features}")
+    """
+    
+    X_train = X_train[selected_features] 
+    X_train_cut = X_train_cut[selected_features] 
+    X_test = X_test[selected_features]
+    
+    best_model_index = find_best(model_list, X_train_cut, y_train_cut)
     best_model = model_list[best_model_index]
+    print("bbbbbbbbbbbbbbbbbbbbbbbbbbb")
+    best_model = best_model.get_pipe()
+    print(best_model)
+    print("ddddddddddddddddddddddddddddddddddd")
+    best_model = best_model.fit(X_train, y_train)
+    print("cccccccccccccccccccccccccccccccc")
+    scores = best_model.score(X_test, y_test)
+    print(scores)
 
-    best_model.set_X_y_train(X_train, y_train)
-    best_model.train()
-    scores = best_model.get_scores(X_test, y_test)
-    log(best_model.get_model_name(), scores, best_model.get_predictions(), plotter_obj)
-
-    y_pred, y_test = best_model.get_predictions()
-    plotter_obj.save_single_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.get_model_name())
 if __name__=='__main__':
     main()

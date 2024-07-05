@@ -47,7 +47,7 @@ def run_model(model, X_train, y_train):
     if not parameters.CROSS_VALIDATION:
         model.train()
     if parameters.CROSS_VALIDATION:
-        model.cv_train()
+        model.cv_train(parameters.GENERAL_SCORING_RULE)
 
 def find_best(models, X_train, y_train):
     scoring_rules = ['neg_mean_absolute_error', 'neg_mean_squared_error', 'neg_root_mean_squared_error', 'r2']
@@ -144,6 +144,6 @@ def main():
     log(best_model.get_model_name(), scores, best_model.get_predictions(), plotter_obj)
 
     y_pred, y_test = best_model.get_predictions()
-    plotter_obj.save_single_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title)
+    plotter_obj.save_single_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.get_model_name())
 if __name__=='__main__':
     main()

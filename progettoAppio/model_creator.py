@@ -15,17 +15,24 @@ from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn import metrics
 from matplotlib import pyplot as plt
 
+from correlation_feature_selection import CorrelationFeatureSelection
+
 class ModelCreator:
     def __init__(self, name):
         self.pipe_list = []
         self.name = name
-
+    
     def set_model_estimator(self, estimator):
         self.estimator = estimator
 
-    def set_pipe_feature_selection(self, scoring_rule, n_features='auto'):
+    def set_pipe_recursive_feature_selection(self, scoring_rule='r2', n_features='auto'):
         self.pipe_list.append(
             ("SFE", SequentialFeatureSelector(estimator = self.estimator, n_features_to_select=n_features, scoring=scoring_rule, n_jobs=-1))
+        )
+
+    def set_pipe_corr_feature_selection(self, threshold=0.4):
+        self.pipe_list.append(
+            ("CFS", CorrelationFeatureSelection(threshold))
         )
     
     def set_pipe_estimator(self):
@@ -44,4 +51,3 @@ class ModelCreator:
 
     def get_pipe(self):
         return self.pipe
-    

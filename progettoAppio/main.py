@@ -68,7 +68,7 @@ def find_best(models, X_train, y_train):
         print(model.get_pipe())
         result = cross_validate(model.get_pipe(), X_train, y_train, cv = 5, scoring = scoring_rules, return_train_score = False, n_jobs=-1)
         results[model] = result
-    print("aaaaaaaaaaaaaaaaaaaaaaa") 
+    
     for model in models:
         current_score = np.mean(results[model][decision_rule]) 
         if current_score > best_score:
@@ -92,14 +92,14 @@ def main():
     
     X_train_cut, y_train_cut = utils.cut_dataset(X_train, y_train, parameters.DATASET_CUT_FRACTION)
     verbose_log(f"X_train_cut:{X_train_cut.shape} y_train_cut:{y_train_cut.shape}") 
-
+    
     knn = ModelCreator('knn')
     knn.set_model_estimator(KNeighborsRegressor())
     knn.set_pipe_estimator()
     
     knn_fs = ModelCreator('knn_fs')
     knn_fs.set_model_estimator(KNeighborsRegressor())
-    knn_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    knn_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     knn_fs.set_pipe_estimator()
     
     dt = ModelCreator('dt')
@@ -108,7 +108,7 @@ def main():
     
     dt_fs = ModelCreator('dt_fs')
     dt_fs.set_model_estimator(DecisionTreeRegressor())
-    dt_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    dt_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     dt_fs.set_pipe_estimator()
 
     rf = ModelCreator('rf')
@@ -117,7 +117,7 @@ def main():
     
     rf_fs = ModelCreator('rf_fs')
     rf_fs.set_model_estimator(RandomForestRegressor())
-    rf_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    rf_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     rf_fs.set_pipe_estimator()
 
     svr = ModelCreator('svr')
@@ -126,10 +126,10 @@ def main():
     
     svr_fs = ModelCreator('svr_fs')
     svr_fs.set_model_estimator(SVR())
-    svr_fs.set_pipe_feature_selection(parameters.GENERAL_SCORING_RULE)
+    svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    model_list = [dt, dt_fs,]
+    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
     hparam_dic = {
         'knn': param_grids.KNN,
         'dt': param_grids.decision_tree,
@@ -154,20 +154,21 @@ def main():
     verbose_log(f"selected feaures: {selected_features}")
     """
     
-    X_train = X_train[selected_features] 
-    X_train_cut = X_train_cut[selected_features] 
-    X_test = X_test[selected_features]
+    #X_train = X_train[selected_features] 
+    #X_train_cut = X_train_cut[selected_features] 
+    #X_test = X_test[selected_features]
     
     best_model_index = find_best(model_list, X_train_cut, y_train_cut)
     best_model = model_list[best_model_index]
-    print("bbbbbbbbbbbbbbbbbbbbbbbbbbb")
-    best_model = best_model.get_pipe()
-    print(best_model)
-    print("ddddddddddddddddddddddddddddddddddd")
-    best_model = best_model.fit(X_train, y_train)
-    print("cccccccccccccccccccccccccccccccc")
-    scores = best_model.score(X_test, y_test)
-    print(scores)
+    best_model_pipe = best_model.get_pipe()
+    verbose_log(f"Best model:{best_model.name}")
+
+    best_model_pipe = best_model_pipe.fit(X_train, y_train)
+    
+    y_pred = best_model_pipe.predict(X_test)
+    metrics = utils.get_metrics(y_pred, y_test)
+    utils.print_pretty_metrics(best_model.name, metrics)
+    plotter_obj.save_single_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.name)
 
 if __name__=='__main__':
     main()

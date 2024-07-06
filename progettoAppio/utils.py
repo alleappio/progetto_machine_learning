@@ -4,8 +4,9 @@ from matplotlib import pyplot as plt
 import seaborn as sea
 from json import dumps
 import datetime
-
+import numpy as np
 import general_params as parameters
+from sklearn import metrics
 
 def init_log_file(filename, title, clean=False):
     if clean:
@@ -19,6 +20,15 @@ def print_pretty_metrics(context, metrics):
     print(
         f"{context}: {metrics_string}"
     )
+
+def get_metrics(y_test, y_pred):
+    calculated_metrics={
+        "MAE": metrics.mean_absolute_error(y_test, y_pred),
+        "MSE": metrics.mean_squared_error(y_test, y_pred),
+        "RMSE": np.sqrt(metrics.mean_squared_error(y_test, y_pred)),
+        "R2": metrics.r2_score(y_test,y_pred),
+    }
+    return calculated_metrics
 
 def save_metrics_to_file(context, metrics, filename):
     metrics_string=dumps(metrics, indent=2)
@@ -42,7 +52,7 @@ def read_args():
                         help='Path to the file containing the training set.')
     parser.add_argument("--verbose", type=str2bool, default=True)
     parser.add_argument("--cv", type=int, default=3)
-    parser.add_argument("--title", type=str, default=str(datetime.datetime.now()))
+    parser.add_argument("--title", type=str, default="o")
     parser.add_argument("--clean_file", type=str2bool, default=False)
     parser.add_argument("--feature_selection", type=str, default='filter')
     args = parser.parse_args()

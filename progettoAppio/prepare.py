@@ -11,7 +11,7 @@ class PrepareData:
         self.train_data, self.test_data = train_test_split(self.data, test_size=0.4)
         
         self.train_data = self.train_data.reset_index(drop=True)
-        self.test_data=self.test_data.reset_index(drop=True)
+        self.test_data = self.test_data.reset_index(drop=True)
         
         self.split_X_y()
         if normalization:

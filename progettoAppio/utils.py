@@ -35,11 +35,6 @@ def save_metrics_to_file(context, metrics, filename):
     with open(filename, "a", encoding = "utf-8") as f:
         f.write(f"\n{context}: {metrics_string}\n")
 
-def save_features_to_file(context, features, filename):
-    features_string=dumps(list(features), indent=2)
-    with open(filename, "a", encoding = "utf-8") as f:
-        f.write(f"\n{context}: {features_string}\n")
-
 def cut_dataset(X, y, records_fraction):
     X = X.sample(frac=records_fraction)
     y = y[X.index]

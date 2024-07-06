@@ -41,19 +41,11 @@ def get_dataset(args):
     
     return dataset
 
-def run_model(model, X_train, y_train):
-    verbose_log(f"Training model {model.get_model_name()}\nCross validation: {str(parameters.CROSS_VALIDATION)}")
-    model.set_X_y_train(X_train, y_train)
-    if not parameters.CROSS_VALIDATION:
-        model.train()
-    if parameters.CROSS_VALIDATION:
-        model.cv_train(parameters.GENERAL_SCORING_RULE)
-
-def find_best(models, X_train, y_train):
+def find_best(models, X_train, y_train, scoring_rule):
     scoring_rules = ['neg_mean_absolute_error', 'neg_mean_squared_error', 'neg_root_mean_squared_error', 'r2']
     results = {}
     best_score = -np.inf
-    decision_rule = 'test_r2'
+    decision_rule = f'test_{scoring_rule}'
 
     for model in models:
         print(model.get_pipe())
@@ -84,43 +76,43 @@ def main():
     X_train_cut, y_train_cut = utils.cut_dataset(X_train, y_train, parameters.DATASET_CUT_FRACTION)
     verbose_log(f"X_train_cut:{X_train_cut.shape} y_train_cut:{y_train_cut.shape}") 
     
-    knn = ModelCreator('knn')
+    knn = ModelCreator('k nearest neighbors', 'knn')
     knn.set_model_estimator(KNeighborsRegressor())
     knn.set_pipe_estimator()
     
-    knn_fs = ModelCreator('knn_fs')
+    knn_fs = ModelCreator('k nearest neighbors-feature selection', 'knn_fs')
     knn_fs.set_model_estimator(KNeighborsRegressor())
     knn_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     knn_fs.set_pipe_estimator()
     
-    dt = ModelCreator('dt')
+    dt = ModelCreator('decision tree', 'dt')
     dt.set_model_estimator(DecisionTreeRegressor())
     dt.set_pipe_estimator()
     
-    dt_fs = ModelCreator('dt_fs')
+    dt_fs = ModelCreator('decision tree-feature selection', 'dt_fs')
     dt_fs.set_model_estimator(DecisionTreeRegressor())
     dt_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     dt_fs.set_pipe_estimator()
 
-    rf = ModelCreator('rf')
+    rf = ModelCreator('random forest', 'rf')
     rf.set_model_estimator(RandomForestRegressor())
     rf.set_pipe_estimator()
     
-    rf_fs = ModelCreator('rf_fs')
+    rf_fs = ModelCreator('random forest-feature selection', 'rf_fs')
     rf_fs.set_model_estimator(RandomForestRegressor())
     rf_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     rf_fs.set_pipe_estimator()
 
-    svr = ModelCreator('svr')
+    svr = ModelCreator('SVR', 'svr')
     svr.set_model_estimator(SVR())
     svr.set_pipe_estimator()
     
-    svr_fs = ModelCreator('svr_fs')
+    svr_fs = ModelCreator('SVR-feature selection', 'svr_fs')
     svr_fs.set_model_estimator(SVR())
     svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    model_list = [dt, dt_fs, rf, rf_fs, knn, knn_fs]
+    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
     hparam_dic = {
         'knn': param_grids.KNN,
         'dt': param_grids.decision_tree,
@@ -135,21 +127,10 @@ def main():
     for model in model_list:
         verbose_log(f"creating {model.name}")
         model.assemble_pipe()
-        model.do_pipe_grid_search(hparam_dic[model.name], parameters.GENERAL_SCORING_RULE, parameters.CV, X_train_cut, y_train_cut)
+        model.do_pipe_grid_search(hparam_dic[model.abbreviation], parameters.GENERAL_SCORING_RULE, parameters.CV, X_train_cut, y_train_cut)
         verbose_log(f"best {model.name}: {model.get_pipe()}")
-    
-    """ 
-    s = FeatureSelectorFilter(dataset, parameters.TARGET)
-    selected_features = s.select_from_threshold(parameters.FEATURE_CORRELATION_THRESHOLD)
-    utils.save_features_to_file(f"filter method", selected_features, parameters.FILENAME_SAVE_FEATURES)
-    verbose_log(f"selected feaures: {selected_features}")
-    """
-    
-    #X_train = X_train[selected_features] 
-    #X_train_cut = X_train_cut[selected_features] 
-    #X_test = X_test[selected_features]
-    
-    best_model_index = find_best(model_list, X_train_cut, y_train_cut)
+     
+    best_model_index = find_best(model_list, X_train_cut, y_train_cut, parameters.GENERAL_SCORING_RULE)
     best_model = model_list[best_model_index]
     best_model_pipe = best_model.get_pipe()
     verbose_log(f"Best model:{best_model.name}")

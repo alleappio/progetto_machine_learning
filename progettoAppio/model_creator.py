@@ -18,9 +18,10 @@ from matplotlib import pyplot as plt
 from correlation_feature_selection import CorrelationFeatureSelection
 
 class ModelCreator:
-    def __init__(self, name):
+    def __init__(self, name, abbreviation):
         self.pipe_list = []
         self.name = name
+        self.abbreviation = abbreviation
     
     def set_model_estimator(self, estimator):
         self.estimator = estimator

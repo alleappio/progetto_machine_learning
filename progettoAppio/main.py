@@ -8,24 +8,15 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVR
 
 import utils
 import param_grids
 import general_params as parameters
 from prepare import PrepareData 
-from feature_selector import FeatureSelectorFilter
-from feature_selector import FeatureSelectorWrapper
 from plotter import Plotter
 
 from model_creator import ModelCreator
-
-from MLStrategies import LR
-from MLStrategies import KNNR
-from MLStrategies import DT
-from MLStrategies import RF
-from MLStrategies import SVM
 
 # DataSet link: https://archive.ics.uci.edu/dataset/464/superconductivty+data
 # DataSet doc: https://github.com/uci-ml-repo/ucimlrepo
@@ -129,7 +120,7 @@ def main():
     svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    model_list = [dt, dt_fs, rf, rf_fs, knn, knn_fs]
     hparam_dic = {
         'knn': param_grids.KNN,
         'dt': param_grids.decision_tree,

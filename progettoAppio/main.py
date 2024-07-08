@@ -2,8 +2,9 @@ from ucimlrepo import fetch_ucirepo
 import pandas as pd
 import numpy as np
 import os
-from sklearn.model_selection import cross_validate
+from json import dumps
 
+from sklearn.model_selection import cross_validate
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
@@ -11,10 +12,9 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 
 import utils
-import param_grids
+import hyper_param_grids as param_grids
 import general_params as parameters
 from prepare import PrepareData 
-from plotter import Plotter
 
 from model_creator import ModelCreator
 
@@ -38,12 +38,12 @@ def get_dataset(args):
     
         verbose_log("saving data in file")
         dataset.to_csv("DataSet/superconductvty.csv", index=False)
-    
     return dataset
 
 def find_best(models, X_train, y_train, scoring_rule):
     scoring_rules = ['neg_mean_absolute_error', 'neg_mean_squared_error', 'neg_root_mean_squared_error', 'r2']
     results = {}
+    metrics = {}
     best_score = -np.inf
     decision_rule = f'test_{scoring_rule}'
 
@@ -51,13 +51,20 @@ def find_best(models, X_train, y_train, scoring_rule):
         print(model.get_pipe())
         result = cross_validate(model.get_pipe(), X_train, y_train, cv = 5, scoring = scoring_rules, return_train_score = False, n_jobs=-1)
         results[model] = result
-    
+        metrics[model.name] = {
+            "MAE": np.mean(result[f'test_{scoring_rules[0]}']),
+            "MSE": np.mean(result[f'test_{scoring_rules[1]}']),
+            "RMSE": np.mean(result[f'test_{scoring_rules[2]}']),
+            "R2": np.mean(result[f'test_{scoring_rules[3]}']),
+        }
+    verbose_log("metrics:")
+    verbose_log(dumps(metrics, indent=2))
+
     for model in models:
         current_score = np.mean(results[model][decision_rule]) 
         if current_score > best_score:
             best_score = current_score
             best_model = model
-    
     return models.index(best_model)
 
 def main():
@@ -65,7 +72,6 @@ def main():
      
     dataset = get_dataset(args)
     
-    plotter_obj = Plotter()
     
     pre_processed_data = PrepareData(dataset, parameters.TARGET) 
     # train data
@@ -112,7 +118,8 @@ def main():
     svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    #model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    model_list = [knn, knn_fs]
     hparam_dic = {
         'knn': param_grids.KNN,
         'dt': param_grids.decision_tree,
@@ -138,9 +145,11 @@ def main():
     best_model_pipe = best_model_pipe.fit(X_train, y_train)
     
     y_pred = best_model_pipe.predict(X_test)
+    print(y_pred.max())
+    print(y_test.max())
     metrics = utils.get_metrics(y_pred, y_test)
     utils.print_pretty_metrics(best_model.name, metrics)
-    plotter_obj.save_single_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.name)
+    utils.save_target_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.name, parameters.TARGET)
 
 if __name__=='__main__':
     main()

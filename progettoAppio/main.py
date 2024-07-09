@@ -52,9 +52,9 @@ def find_best(models, X_train, y_train, scoring_rule):
         result = cross_validate(model.get_pipe(), X_train, y_train, cv = 5, scoring = scoring_rules, return_train_score = False, n_jobs=-1)
         results[model] = result
         metrics[model.name] = {
-            "MAE": np.mean(result[f'test_{scoring_rules[0]}']),
-            "MSE": np.mean(result[f'test_{scoring_rules[1]}']),
-            "RMSE": np.mean(result[f'test_{scoring_rules[2]}']),
+            "MAE": np.abs(np.mean(result[f'test_{scoring_rules[0]}'])),
+            "MSE": np.abs(np.mean(result[f'test_{scoring_rules[1]}'])),
+            "RMSE": np.abs(np.mean(result[f'test_{scoring_rules[2]}'])),
             "R2": np.mean(result[f'test_{scoring_rules[3]}']),
         }
     verbose_log("metrics:")
@@ -71,7 +71,6 @@ def main():
     args = utils.read_args()
      
     dataset = get_dataset(args)
-    
     
     pre_processed_data = PrepareData(dataset, parameters.TARGET) 
     # train data
@@ -118,8 +117,9 @@ def main():
     svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    #model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
-    model_list = [knn, knn_fs]
+    # model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    model_list = [knn_fs, dt_fs, rf_fs, svr_fs]
+    # model_list = [knn, dt, rf, svr]
     hparam_dic = {
         'knn': param_grids.KNN,
         'dt': param_grids.decision_tree,
@@ -145,11 +145,12 @@ def main():
     best_model_pipe = best_model_pipe.fit(X_train, y_train)
     
     y_pred = best_model_pipe.predict(X_test)
-    print(y_pred.max())
-    print(y_test.max())
     metrics = utils.get_metrics(y_pred, y_test)
+
     utils.print_pretty_metrics(best_model.name, metrics)
     utils.save_target_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.name, parameters.TARGET)
+    utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, clean=args.clean_file)
+    utils.save_metrics_to_file(best_model.name, metrics, parameters.FILENAME_SAVE_METRICS)
 
 if __name__=='__main__':
     main()

@@ -79,7 +79,7 @@ def save_target_plot(y_pred, y_test, save_dir, title, model_name, target_name):
     if y_pred.max()>y_test.max():
         max = y_pred.max()
     max = int(max)
-    plt.gcf().set_size_inches(9, 9)
+    plt.gcf().set_size_inches(8, 8)
     plt.xticks(range(0,max,10))
     plt.yticks(range(0,max,10))
     plt.plot(y_pred, y_test, 'bo', markersize=5)

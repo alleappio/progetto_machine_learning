@@ -49,20 +49,11 @@ def read_args():
     parser.add_argument("--cv", type=int, default=3)
     parser.add_argument("--title", type=str, default="o")
     parser.add_argument("--clean_file", type=str2bool, default=False)
-    parser.add_argument("--feature_selection", type=str, default='filter')
     args = parser.parse_args()
     
     parameters.VERBOSE = args.verbose
-    parameters.FEATURE_SELECTION_METHOD = args.feature_selection
     parameters.CV = args.cv
     return args
-
-def print_info(df: pd.DataFrame):
-    print(df.info())
-    print(df.describe())
-    print(df.head())
-    print(df.columns)
-    print(len(df.columns))
 
 def str2bool(v):
     if isinstance(v, bool):

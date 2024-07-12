@@ -117,8 +117,8 @@ def main():
     svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    # model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
-    model_list = [knn_fs, dt_fs, rf_fs, svr_fs]
+    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    # model_list = [knn_fs, dt_fs, rf_fs, svr_fs]
     # model_list = [knn, dt, rf, svr]
     hparam_dic = {
         'knn': param_grids.KNN,

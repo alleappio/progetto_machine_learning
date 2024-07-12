@@ -1,0 +1,5 @@
+DataSet/*
+__pycache__
+.venv
+log/log_metrics
+log/graphs/*

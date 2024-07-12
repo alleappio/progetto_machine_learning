@@ -1,2 +1,0 @@
-TARGET = 'critical_temp'
-FEATURE_CORRELATION_THRESHOLD = 0.5

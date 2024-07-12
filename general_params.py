@@ -1,0 +1,9 @@
+VERBOSE = False
+TARGET = 'critical_temp'
+FEATURE_CORRELATION_THRESHOLD = 0.15
+FILENAME_SAVE_METRICS = "log/log_metrics"
+DIRECTORY_SAVE_GRAPHS = "log/graphs"
+GENERAL_SCORING_RULE = 'neg_mean_absolute_error'
+#GENERAL_SCORING_RULE = 'r2'
+DATASET_CUT_FRACTION = 0.6
+CV = 5

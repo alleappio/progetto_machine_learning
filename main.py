@@ -6,7 +6,6 @@ from json import dumps
 
 from sklearn.model_selection import cross_validate
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
@@ -25,15 +24,15 @@ def verbose_log(msg):
     if parameters.VERBOSE:
         print(msg)
 
+# If dataset is available in the path, take it from there. Otherwise, download it in the path
+# Default Path is in utils.read_args()
 def get_dataset(args):
     if os.path.isfile(args.dataset_path):
         dataset = pd.read_csv(args.dataset_path)
     else:
-        # fetch dataset
         verbose_log("fetch dataset")
         superconductivty_data = fetch_ucirepo(id=464)
 
-        # data (as pandas dataframes)
         verbose_log("saving data in veriable")
         dataset = superconductivty_data.data.original
     
@@ -41,6 +40,8 @@ def get_dataset(args):
         dataset.to_csv("DataSet/superconductvty.csv", index=False)
     return dataset
 
+# Function to execute the cross validation stage, it selects out of a list of models, the best one in terms of
+# the scoring_rule passed by parameters
 def find_best(models, X_train, y_train, scoring_rule):
     scoring_rules = ['neg_mean_absolute_error', 'neg_mean_squared_error', 'neg_root_mean_squared_error', 'r2']
     results = {}
@@ -68,20 +69,28 @@ def find_best(models, X_train, y_train, scoring_rule):
             best_model = model
     return models.index(best_model)
 
+
 def main():
     args = utils.read_args()
      
     dataset = get_dataset(args)
     
+    # Data pre processing stage
     pre_processed_data = PrepareData(dataset, parameters.TARGET) 
+    
     # train data
     X_train, y_train = pre_processed_data.get_train_data()
+    
     # test data
     X_test, y_test = pre_processed_data.get_test_data()
     
     X_train_cut, y_train_cut = utils.cut_dataset(X_train, y_train, parameters.DATASET_CUT_FRACTION)
     verbose_log(f"X_train_cut:{X_train_cut.shape} y_train_cut:{y_train_cut.shape}") 
     
+    # Pipelines creation:
+    # For every model create 2 pipelines:
+    # - 1 without feature selection
+    # - 1 with feature selection
     knn = ModelCreator('k nearest neighbors', 'knn')
     knn.set_model_estimator(KNeighborsRegressor())
     knn.set_pipe_estimator()
@@ -118,9 +127,10 @@ def main():
     svr_fs.set_pipe_corr_feature_selection(parameters.FEATURE_CORRELATION_THRESHOLD)
     svr_fs.set_pipe_estimator()
    
-    #model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
-    # model_list = [knn_fs, dt_fs, rf_fs, svr_fs]
-    model_list = [knn, dt]
+    # List of pipelines to analize
+    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+
+    # Dictionary containing the hyper parameters to pass to a defined pipeline
     hparam_dic = {
         'knn': param_grids.KNN,
         'dt': param_grids.decision_tree,
@@ -132,22 +142,29 @@ def main():
         'svr_fs': param_grids.SVR
     }
 
+    # For every pipeline:
+    # - assemble it
+    # - execute grid search for the best hyper parameters
     for model in model_list:
         verbose_log(f"creating {model.name}")
         model.assemble_pipe()
         model.do_pipe_grid_search(hparam_dic[model.abbreviation], parameters.GENERAL_SCORING_RULE, parameters.CV, X_train_cut, y_train_cut)
         verbose_log(f"best {model.name}: {model.get_pipe()}")
-     
+    
+    # Find the best pipeline with cross validation
     best_model_index = find_best(model_list, X_train_cut, y_train_cut, parameters.GENERAL_SCORING_RULE)
     best_model = model_list[best_model_index]
     best_model_pipe = best_model.get_pipe()
     verbose_log(f"Best model:{best_model.name}")
-
+    
+    # Fit the best pipeline with the whole training dataset
     best_model_pipe = best_model_pipe.fit(X_train, y_train)
     
+    # Predict the test dataset
     y_pred = best_model_pipe.predict(X_test)
     metrics = utils.get_metrics(y_pred, y_test)
-
+    
+    # Print and save scores and graph
     utils.print_pretty_metrics(best_model.name, metrics)
     utils.save_target_plot(y_pred, y_test, parameters.DIRECTORY_SAVE_GRAPHS, args.title, best_model.name, parameters.TARGET)
     utils.init_log_file(parameters.FILENAME_SAVE_METRICS, args.title, clean=args.clean_file)

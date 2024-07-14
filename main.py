@@ -27,17 +27,24 @@ def verbose_log(msg):
 # If dataset is available in the path, take it from there. Otherwise, download it in the path
 # Default Path is in utils.read_args()
 def get_dataset(args):
-    if os.path.isfile(args.dataset_path):
-        dataset = pd.read_csv(args.dataset_path)
-    else:
-        verbose_log("fetch dataset")
-        superconductivty_data = fetch_ucirepo(id=464)
+    verbose_log(f"fetch dataset in directory {args.dataset_path}")
 
-        verbose_log("saving data in veriable")
+    if os.path.isfile(f'{args.dataset_path}/superconductivity_data.csv'):
+        verbose_log(f"dataset found in directory {args.dataset_path}")
+        dataset = pd.read_csv(f'{args.dataset_path}/superconductivity_data.csv')
+    else:
+        verbose_log(f"dataset not found in directory {args.dataset_path}")
+        verbose_log(f"downloading dataset...")
+        superconductivty_data = fetch_ucirepo(id=464)
         dataset = superconductivty_data.data.original
     
-        verbose_log("saving data in file")
-        dataset.to_csv("DataSet/superconductvty.csv", index=False)
+        if not os.path.exists(args.dataset_path):
+              os.makedirs(args.dataset_path)
+
+        verbose_log(f"saving data in file {args.dataset_path}/superconductivity_data.csv")
+        dataset.to_csv(f'{args.dataset_path}/superconductivity_data.csv')
+        
+        verbose_log(f"dataset saved succesfully")
     return dataset
 
 # Function to execute the cross validation stage, it selects out of a list of models, the best one in terms of
@@ -75,6 +82,12 @@ def main():
      
     dataset = get_dataset(args)
     
+    # Creating log directory
+    if not os.path.exists(parameters.LOG_DIRECTORY):
+          os.makedirs(parameters.LOG_DIRECTORY)
+    if not os.path.exists(parameters.DIRECTORY_SAVE_GRAPHS):
+          os.makedirs(parameters.DIRECTORY_SAVE_GRAPHS)
+
     # Data pre processing stage
     pre_processed_data = PrepareData(dataset, parameters.TARGET) 
     
@@ -128,7 +141,8 @@ def main():
     svr_fs.set_pipe_estimator()
    
     # List of pipelines to analize
-    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    # model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
+    model_list = [knn, knn_fs]
 
     # Dictionary containing the hyper parameters to pass to a defined pipeline
     hparam_dic = {

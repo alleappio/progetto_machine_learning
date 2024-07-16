@@ -141,8 +141,7 @@ def main():
     svr_fs.set_pipe_estimator()
    
     # List of pipelines to analize
-    # model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
-    model_list = [knn, knn_fs]
+    model_list = [knn, knn_fs, dt, dt_fs, rf, rf_fs, svr, svr_fs]
 
     # Dictionary containing the hyper parameters to pass to a defined pipeline
     hparam_dic = {

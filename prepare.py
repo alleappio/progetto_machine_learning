@@ -26,7 +26,7 @@ class PrepareData:
         mms.fit(self.X_train)
         self.X_train[self.X_train.columns] = mms.transform(self.X_train[self.X_train.columns])
         
-        mms.fit(self.X_test)
+        mms.transform(self.X_test)
         self.X_test[self.X_test.columns] = mms.transform(self.X_test[self.X_test.columns])
     
     def get_train_data(self):

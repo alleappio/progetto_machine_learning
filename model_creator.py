@@ -1,19 +1,8 @@
-import pandas as pd
-import numpy as np
 
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
-from sklearn.svm import SVR
 from sklearn.pipeline import Pipeline
 
-from sklearn.feature_selection import RFE
 from sklearn.feature_selection import SequentialFeatureSelector
-
-from sklearn import metrics
-from matplotlib import pyplot as plt
 
 from correlation_feature_selection import CorrelationFeatureSelection
 

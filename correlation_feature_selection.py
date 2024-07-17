@@ -22,6 +22,7 @@ class CorrelationFeatureSelection(object):
         for i in corr_dict:
             if np.abs(corr_dict[i])>=threshold and i!=self.target:
                 winners.append(i)
+
         return winners
 
     def __str__(self):

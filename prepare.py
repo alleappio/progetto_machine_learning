@@ -1,6 +1,3 @@
-import pandas as pd
-import numpy as np
-
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
@@ -29,7 +26,7 @@ class PrepareData:
         mms.fit(self.X_train)
         self.X_train[self.X_train.columns] = mms.transform(self.X_train[self.X_train.columns])
         
-        mms.fit(self.X_test)
+        mms.transform(self.X_test)
         self.X_test[self.X_test.columns] = mms.transform(self.X_test[self.X_test.columns])
     
     def get_train_data(self):

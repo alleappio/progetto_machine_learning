@@ -17,6 +17,6 @@ KNN = {
 }        
 
 random_forest = {
-    'estimator__n_estimators': [100, 200, 300],  # Numero di alberi nella foresta
-    'estimator__max_depth': [None, 10, 20, 30]       # Profondità massima degli alberi
+    'estimator__n_estimators': [100, 200, 300],
+    'estimator__max_depth': [None, 10, 20, 30]
 }

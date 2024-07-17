@@ -1,9 +1,6 @@
-import pandas as pd
 import argparse
 from matplotlib import pyplot as plt
-import seaborn as sea
 from json import dumps
-import datetime
 import numpy as np
 import general_params as parameters
 from sklearn import metrics
@@ -43,8 +40,8 @@ def cut_dataset(X, y, records_fraction):
 def read_args():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--dataset_path', type=str,
-                        default='DataSet/superconductvty.csv',
-                        help='Path to the file containing the training set.')
+                        default='DataSet',
+                        help='Path to the directory containing the dataset file.')
     parser.add_argument("--verbose", type=str2bool, default=True)
     parser.add_argument("--cv", type=int, default=3)
     parser.add_argument("--title", type=str, default="o")
